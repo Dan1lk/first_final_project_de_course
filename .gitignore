@@ -1,1 +1,6 @@
 .idea
+dags/*
+!/dags/main.py
+config/
+logs/
+plugins/
