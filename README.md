@@ -6,7 +6,7 @@
 ###Собираем Docker-образы
 Для этого в терминале пишем
 ```bash
-docker-compose up --builder
+docker-compose up -d --build
 ```
 ## Сервисы
 | Сервис     | Адрес                 |
