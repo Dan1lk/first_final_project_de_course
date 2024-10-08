@@ -139,17 +139,7 @@ def conn_and_load_clickhouse(**context):
         print("База успешно создана.")
 
         client.execute('''
-            CREATE TABLE IF NOT EXISTS buildings_with_max_and_min_square 
-            (
-                region String, 
-                max_square Float32,
-                min_square Float32
-            )
-            ENGINE = MergeTree 
-            ORDER BY region
-            ''')
-        client.execute('''
-            CREATE TABLE IF NOT EXISTS mean_and_median_maintenance_year_russian_houses 
+            CREATE TABLE IF NOT EXISTS rushouses_db.mean_and_median_maintenance_year_russian_houses 
             (
                 mean_maintenance_year Int32, 
                 median_maintenance_year Int32
@@ -157,17 +147,9 @@ def conn_and_load_clickhouse(**context):
             ENGINE = MergeTree 
             ORDER BY mean_maintenance_year
             ''')
+
         client.execute('''
-            CREATE TABLE IF NOT EXISTS number_of_buildings_by_decade 
-            (
-                decade nullable(Int32), 
-                number_of_buildings Int32
-            )
-            ENGINE = MergeTree 
-            ORDER BY decade
-            ''')
-        client.execute('''
-            CREATE TABLE IF NOT EXISTS top_10_regions_and_cities_with_the_largest_number_of_objects 
+            CREATE TABLE IF NOT EXISTS rushouses_db.top_10_regions_and_cities_with_the_largest_number_of_objects 
             (
                 region String, 
                 locality_name String,
@@ -177,14 +159,37 @@ def conn_and_load_clickhouse(**context):
             ORDER BY region
             ''')
 
+        client.execute('''
+            CREATE TABLE IF NOT EXISTS rushouses_db.buildings_with_max_and_min_square 
+            (
+                region String, 
+                max_square Float32,
+                min_square Float32
+            )
+            ENGINE = MergeTree 
+            ORDER BY region
+            ''')
 
-        print("Таблица успешно создана.")
+        client.execute('''
+            CREATE TABLE IF NOT EXISTS rushouses_db.number_of_buildings_by_decade 
+            (
+                decade Nullable(Int32), 
+                number_of_buildings Int32
+            )
+            ENGINE = MergeTree 
+            ORDER BY number_of_buildings
+            ''')
 
-        print(mean_and_median_maintenance_year_russian_houses)
-        print(top_10_regions_and_cities_with_the_largest_number_of_objects)
-        print(buildings_with_max_and_min_square)
-        print(number_of_buildings_by_decade_tuples)
+        print("Таблицы успешно созданы.")
 
+        # Загружаем данные в ClickHouse
+        client.execute('INSERT INTO rushouses_db.mean_and_median_maintenance_year_russian_houses VALUES', mean_and_median_maintenance_year_russian_houses)
+        client.execute('INSERT INTO rushouses_db.top_10_regions_and_cities_with_the_largest_number_of_objects VALUES',
+                       top_10_regions_and_cities_with_the_largest_number_of_objects)
+        client.execute('INSERT INTO rushouses_db.buildings_with_max_and_min_square VALUES',
+                       buildings_with_max_and_min_square)
+        client.execute('INSERT INTO rushouses_db.number_of_buildings_by_decade VALUES',
+                       number_of_buildings_by_decade_tuples)
 
     except Exception as e:
         print(f"Error connecting to ClickHouse: {e}")
