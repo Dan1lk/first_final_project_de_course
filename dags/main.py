@@ -117,7 +117,7 @@ def pyspark_job(**context):
     number_of_buildings_by_decade_tuples = [tuple(row) for row in number_of_buildings_by_decade.collect()]
     spark.stop()
 
-    # Пушим данные в XCom для передачи их в task conn_and_load_clickhouse
+    # Добавляем данные в XCom для передачи их в task conn_and_load_clickhouse
     context['ti'].xcom_push(key='mean_and_median_maintenance_year_russian_houses', value=mean_and_median_maintenance_year_russian_houses_tuples)
     context['ti'].xcom_push(key='top_10_regions_and_cities_with_the_largest_number_of_objects', value=top_10_regions_and_cities_with_the_largest_number_of_objects_tuples)
     context['ti'].xcom_push(key='buildings_with_max_and_min_square', value=buildings_with_max_and_min_square_tuples)
@@ -125,6 +125,7 @@ def pyspark_job(**context):
 
 
 def conn_and_load_clickhouse(**context):
+    # Забираем данные из XCom
     mean_and_median_maintenance_year_russian_houses = context['ti'].xcom_pull(key='mean_and_median_maintenance_year_russian_houses')
     top_10_regions_and_cities_with_the_largest_number_of_objects = context['ti'].xcom_pull(key='top_10_regions_and_cities_with_the_largest_number_of_objects')
     buildings_with_max_and_min_square = context['ti'].xcom_pull(key='buildings_with_max_and_min_square')
