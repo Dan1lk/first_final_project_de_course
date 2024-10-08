@@ -45,6 +45,7 @@ def extract_data():
         os.rmdir('Список домов РФ')
         os.remove('zip_file')
         os.remove('russian_houses.csv')
+        print('Файл загружен')
 
 def pyspark_job(**context):
 
@@ -141,8 +142,8 @@ def conn_and_load_clickhouse(**context):
         client.execute('''
             CREATE TABLE IF NOT EXISTS rushouses_db.mean_and_median_maintenance_year_russian_houses 
             (
-                mean_maintenance_year Int32, 
-                median_maintenance_year Int32
+                mean_maintenance_year String, 
+                median_maintenance_year String
             )
             ENGINE = MergeTree 
             ORDER BY mean_maintenance_year
@@ -190,6 +191,8 @@ def conn_and_load_clickhouse(**context):
                        buildings_with_max_and_min_square)
         client.execute('INSERT INTO rushouses_db.number_of_buildings_by_decade VALUES',
                        number_of_buildings_by_decade_tuples)
+
+        print('Данные вставлены')
 
     except Exception as e:
         print(f"Error connecting to ClickHouse: {e}")
