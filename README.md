@@ -12,7 +12,7 @@ docker-compose up -d --build
 | Сервис     | Адрес                 |
 |------------|-----------------------|
 | Airflow | http://localhost:8080 |
-|      ClickHouse        |   http://localhost:9000                    |
+|      ClickHouse        | http://localhost:8123 |
 
 ## В этом проекте были поставлены задачи:
 1. Загрузите файл данных в DataFrame PySpark. Обязательно выведите количество строк.
