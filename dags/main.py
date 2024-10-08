@@ -124,10 +124,66 @@ def pyspark_job(**context):
 
 
 def conn_and_load_clickhouse(**context):
+    mean_and_median_maintenance_year_russian_houses = context['ti'].xcom_pull(key='mean_and_median_maintenance_year_russian_houses')
+    top_10_regions_and_cities_with_the_largest_number_of_objects = context['ti'].xcom_pull(key='top_10_regions_and_cities_with_the_largest_number_of_objects')
+    buildings_with_max_and_min_square = context['ti'].xcom_pull(key='buildings_with_max_and_min_square')
+    number_of_buildings_by_decade_tuples = context['ti'].xcom_pull(key='number_of_buildings_by_decade_tuples')
 
     try:
         client = Client('clickhouse_user')
         print("Connected to ClickHouse")
+
+        client.execute('''
+            CREATE DATABASE IF NOT EXISTS rushouses_db
+            ''')
+        print("База успешно создана.")
+
+        client.execute('''
+            CREATE TABLE IF NOT EXISTS buildings_with_max_and_min_square 
+            (
+                region String, 
+                max_square Float32,
+                min_square Float32
+            )
+            ENGINE = MergeTree 
+            ORDER BY region
+            ''')
+        client.execute('''
+            CREATE TABLE IF NOT EXISTS mean_and_median_maintenance_year_russian_houses 
+            (
+                mean_maintenance_year Int32, 
+                median_maintenance_year Int32
+            )
+            ENGINE = MergeTree 
+            ORDER BY mean_maintenance_year
+            ''')
+        client.execute('''
+            CREATE TABLE IF NOT EXISTS number_of_buildings_by_decade 
+            (
+                decade nullable(Int32), 
+                number_of_buildings Int32
+            )
+            ENGINE = MergeTree 
+            ORDER BY decade
+            ''')
+        client.execute('''
+            CREATE TABLE IF NOT EXISTS top_10_regions_and_cities_with_the_largest_number_of_objects 
+            (
+                region String, 
+                locality_name String,
+                numbers_of_objects Int32
+            )
+            ENGINE = MergeTree 
+            ORDER BY region
+            ''')
+
+
+        print("Таблица успешно создана.")
+
+        print(mean_and_median_maintenance_year_russian_houses)
+        print(top_10_regions_and_cities_with_the_largest_number_of_objects)
+        print(buildings_with_max_and_min_square)
+        print(number_of_buildings_by_decade_tuples)
 
 
     except Exception as e:
